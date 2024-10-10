@@ -7,6 +7,7 @@ import RegulaDocsLiveness from './regula/RegulaDocsLiveness';
 import RegulaDocsReader from './regula/RegulaDocsReader';
 import reportWebVitals from './reportWebVitals';
 import ResultTabs from './regula/result/ResultTab';
+import HealthCheck from './HealthCheck';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { DocumentReaderService } from '@regulaforensics/vp-frontend-document-components';
 import 'semantic-ui-css/semantic.min.css';
@@ -48,6 +49,7 @@ root.render(
         <Route path="/regula-doc-liveness" element={<RegulaDocsLiveness />} />
         <Route path="/regula/result" element={<ResultTabs />} />
         <Route path="/oz-liveness" element={<Oz />} />
+        <Route path="/healthcheck" element={<HealthCheck />} />
       </Routes>
     </Router>
   </React.StrictMode>
