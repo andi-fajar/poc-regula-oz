@@ -1,6 +1,8 @@
 {
   "name": "regula-poc",
   "version": "0.1.0",
+  "homepage": ".",
+  "start_url": ".",
   "private": true,
   "dependencies": {
     "@regulaforensics/ui-components": "^7.4.107",
