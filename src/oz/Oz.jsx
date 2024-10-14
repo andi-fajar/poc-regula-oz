@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Segment, Header, Grid, GridRow, GridColumn, Modal, Button, Icon, ModalContent, Image, ImageGroup, ModalActions } from 'semantic-ui-react';
+import { Segment, Header, Grid, GridRow, GridColumn, Modal, Button, Icon, ModalContent, Image, ImageGroup, ModalActions, Dropdown } from 'semantic-ui-react';
 import { isEmpty, get } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,10 +16,13 @@ const Oz = () => {
   const [livenessResult, setLivenessResult] = useState({});
   const [livenessStarted, setLivenessStarted] = useState(false);
   const [resultModalShown, setResultModalShown] = useState(false);
+  const availableActions = ['video_selfie_left', 'video_selfie_right', 'video_selfie_down', 'video_selfie_high', 'video_selfie_smile', 'video_selfie_eyes', 'video_selfie_scan', 'video_selfie_best']
+  const [actions, setActions] = useState([])
 
   const handleOpenDemo = () => {
     setLivenessStarted(true)
     window.OzLiveness.open({
+        action: (isEmpty(actions) ? null : actions),
         on_error: result => console.error('on_error', result),
         on_submit: result => console.log('on_submit', result),
         on_result: result => console.log('on_result', result),
@@ -31,12 +34,14 @@ const Oz = () => {
         on_capture_complete: result => {
           console.log('on_capture_complete', result);
           setCaptureResult(result)
-          const images = get(result, 'frame_list', []).map((item, index) => item)
-          console.log("images")
-          console.log(images)
         },
     });
   }
+
+  const handleChangeMode = (event, data) => {
+    console.log(data.value);
+    setActions(data.value);
+  };
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -65,20 +70,26 @@ const Oz = () => {
                         justifyContent: 'center'
                         }}>
             <GridRow columns={1} centered>
-                <GridColumn textAlign='center' centered>
-                    <div style={containerStyle}>
                     
                       {livenessStarted ? 
-                        <div>
-                        </div>
+                        <GridColumn textAlign='center' centered>
+                          <Header as="h4">Liveness Check Complete</Header>
+                        </GridColumn>
                        : 
+                       <>
+                        <GridColumn>
+                          <Dropdown placeholder='Random' fluid multiple selection options={availableActions.map(item => ({
+                            key: item,
+                            text: item.charAt(0).toUpperCase() + item.slice(1),
+                            value: item
+                          }))} onChange={handleChangeMode} />
+                        </GridColumn>
                         <GridColumn textAlign='center'>
                             <Button onClick={handleOpenDemo}>Click Here When You Ready</Button>
                         </GridColumn>
-                      }
+                       </>
+}  
                     
-                    </div>
-                </GridColumn>
             </GridRow>
             <GridRow columns={2}>
                 
