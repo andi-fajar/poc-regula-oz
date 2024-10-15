@@ -11,7 +11,9 @@ import {
   import {
     DocumentReaderApi,
     GraphicFieldType,
-    Scenario
+    Scenario,
+    LCID,
+    DocumentType
 } from '@regulaforensics/document-reader-webclient';
 
 
@@ -49,6 +51,22 @@ const RegulaDocsReader = () => {
             images: [ documentFront ],
             processParam: {
                 scenario: Scenario.OCR,
+                documentIdList: [
+                    509424248,
+                    1218661532,
+                    1218661610,
+                    1459656144,
+                    -1664376400,
+                    407567256,
+                    427237424,
+                    517293153,
+                    517872759,
+                    1030278437,
+                    1218661366,
+                    1218661451
+                ],
+                lcidFilter: LCID.INDONESIAN,
+                documentGroupFilter: [DocumentType.IDENTITY_CARD]
             }
         }
         setLoading(true);
