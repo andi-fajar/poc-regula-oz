@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Segment, Header, Button, Grid, GridRow, GridColumn, Modal, Icon, ModalContent, ModalActions } from 'semantic-ui-react';
+import { Segment, Header, Button, Grid, GridRow, GridColumn, Modal, Icon, ModalContent, ModalActions, Checkbox } from 'semantic-ui-react';
 import { isEmpty } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 import ResultTabs from './result/ResultTab';
@@ -31,6 +31,7 @@ const RegulaDocsReader = () => {
 
     const [checkRequest, setCheckRequest] = useState({});
     const [checkResponse, setCheckResponse] = useState({});
+    const [checkIdCardOnly, setCheckIdCardOnly] = useState(true)
 
 
     const containerStyle = {
@@ -51,7 +52,7 @@ const RegulaDocsReader = () => {
             images: [ documentFront ],
             processParam: {
                 scenario: Scenario.OCR,
-                documentIdList: [
+                documentIdList: checkIdCardOnly ? [
                     509424248,
                     1218661532,
                     1218661610,
@@ -64,9 +65,9 @@ const RegulaDocsReader = () => {
                     1030278437,
                     1218661366,
                     1218661451
-                ],
+                ] : [],
                 lcidFilter: LCID.INDONESIAN,
-                documentGroupFilter: [DocumentType.IDENTITY_CARD]
+                documentGroupFilter: checkIdCardOnly ? [DocumentType.IDENTITY_CARD] : []
             }
         }
         setLoading(true);
@@ -186,10 +187,20 @@ const RegulaDocsReader = () => {
                     isEmpty(readerResult) ? (
                         <GridRow columns={1} centered>
                             <GridColumn textAlign='center' centered>
-                                <Header as="h4">Please prepare your ID Card</Header>
+                                <Header as="h4">{`Please prepare your ${checkIdCardOnly ? 'e-KTP' : 'document'}`}</Header>
                             </GridColumn>
                             <GridColumn textAlign='center' centered>
                                 <Button onClick={() => setDocumentCheckStarted(true)}>Click when ready</Button>
+                            </GridColumn>
+                            <GridColumn textAlign='center' centered>
+                                <></>
+                            </GridColumn>
+                            <GridColumn textAlign='center' centered style={{ maxWidth: '500px' }}>
+                                <Checkbox toggle checked={checkIdCardOnly} onChange={(e, data) => setCheckIdCardOnly(data.checked)} 
+                                        label='Check Indonesian ID Card only (e-KTP)'/>
+                            </GridColumn>
+                            <GridColumn textAlign='center' centered>
+                                {!checkIdCardOnly ? <>Supported documents can be found <a href='https://docs.google.com/spreadsheets/d/1tEjV_S2GQWmt4SVjJfoKcbd85Ixont3dNMCsawo6MjU/edit?gid=888941511#gid=888941511'>here</a></> : ''}
                             </GridColumn>
                         </GridRow>
                     ) : (

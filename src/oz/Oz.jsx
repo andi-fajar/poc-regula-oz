@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Segment, Header, Grid, GridRow, GridColumn, Modal, Button, Icon, ModalContent, Image, ImageGroup, ModalActions, Dropdown } from 'semantic-ui-react';
+import { Segment, Header, Grid, GridRow, GridColumn, Modal, Button, Icon, ModalContent, Image, ImageGroup, ModalActions, Dropdown, Label } from 'semantic-ui-react';
 import { isEmpty, get } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 
@@ -77,7 +77,8 @@ const Oz = () => {
                         </GridColumn>
                        : 
                        <>
-                        <GridColumn>
+                        <GridColumn style={{ maxWidth: '500px' }}>
+                          <Label>Select liveness check actions: </Label>
                           <Dropdown placeholder='Random' fluid multiple selection options={availableActions.map(item => ({
                             key: item,
                             text: item.charAt(0).toUpperCase() + item.slice(1),
