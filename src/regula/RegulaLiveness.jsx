@@ -23,8 +23,8 @@ const RegulaWithLiveness = () => {
     const [isResultOpen, setIsResultOpen] = useState(false);
     const containerRef = useRef(null);
     const elementRef = useRef(null);
-    const configuration = { basePath: 'https://nightly-api.regulaforensics.com' };
-    // const configuration = { basePath: 'https://mfcrgla.mfc.staging-traveloka.com' };
+    // const configuration = { basePath: 'https://nightly-api.regulaforensics.com' };
+    const configuration = { basePath: 'https://mfcrgla.mfc.staging-traveloka.com' };
     const api = new DocumentReaderApi(configuration);
     const [readerResult, setReaderResult] = useState({});
     const [isLoading, setLoading] = useState(false);
@@ -121,7 +121,7 @@ const RegulaWithLiveness = () => {
                     onboardingScreenStartButtonBackground: '#5b5050',
                 },
                 // workerPath: 'https://nightly-api.regulaforensics.com',
-                // url: 'https://nightly-api.regulaforensics.com',
+                url: 'https://mfcrgla.mfc.staging-traveloka.com',
             }
         console.log(elementRefCurrent.settings);
         console.log(elementRefCurrent);
