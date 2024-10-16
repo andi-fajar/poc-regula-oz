@@ -39,7 +39,7 @@ function Home() {
             onClick={() => handleRegulaDocumentReader()}
             style={{ marginBottom: '1rem' }}
           >
-            Regula Document reader
+            Regula Document Reader
           </Button>
           <Button
             fluid

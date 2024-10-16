@@ -24,6 +24,7 @@ const RegulaWithLiveness = () => {
             if (data.detail.data?.status === 1 && data.detail.data.response) {
                 console.log(data.detail.data.response);
                 setLivenessResult(data.detail.data.response);
+                setLivenessCheckStarted(false);
             }
         }
 
