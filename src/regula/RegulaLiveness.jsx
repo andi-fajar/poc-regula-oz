@@ -4,9 +4,9 @@ import { isEmpty } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 import ResultTabs from './result/ResultTab';
 import {
-    EventActions,
+    // EventActions,
     defineComponents,
-    InternalScenarios
+    // InternalScenarios
   } from '@regulaforensics/vp-frontend-document-components';
   import {
     DocumentReaderApi,
@@ -15,15 +15,16 @@ import {
     LCID,
     DocumentType
 } from '@regulaforensics/document-reader-webclient';
+// import { FaceLivenessDetailType, FaceLivenessWebComponent } from '@regulaforensics/vp-frontend-face-components';
 
 
-const RegulaDocsReader = () => {
+const RegulaWithLiveness = () => {
     const navigate = useNavigate();
     const [isResultOpen, setIsResultOpen] = useState(false);
     const containerRef = useRef(null);
     const elementRef = useRef(null);
-    // const configuration = { basePath: 'https://nightly-api.regulaforensics.com' };
-    const configuration = { basePath: 'https://mfcrgla.mfc.staging-traveloka.com' };
+    const configuration = { basePath: 'https://nightly-api.regulaforensics.com' };
+    // const configuration = { basePath: 'https://mfcrgla.mfc.staging-traveloka.com' };
     const api = new DocumentReaderApi(configuration);
     const [readerResult, setReaderResult] = useState({});
     const [isLoading, setLoading] = useState(false);
@@ -81,24 +82,14 @@ const RegulaDocsReader = () => {
     }
 
     const regulaListener = useCallback(async (data) => {
-        if (data.detail.action === EventActions.PROCESS_FINISHED) {
-            const status = data.detail.data?.status;
-            const isFinishStatus = status === 1;
-
-            if (!isFinishStatus || !data.detail.data?.response) return;
-            // console.log(data.detail.data.response);
-            // TODO: try end to end server validation
-            //window.RegulaDocumentSDK.finalizePackage().then((item) => { console.log(item) });
-            // requestOcr(data.detail.data.response);
-            setReaderResult(data.detail.data.response)
-            await new Promise(r => {
-                setTimeout(r, 700);
-                setDocumentCheckStarted(false);
-            });
+        if (data.detail.action === 'PROCESS_FINISHED') {
+            if (data.detail.data?.status === 1 && data.detail.data.response) {
+                console.log(data.detail.data.response);
+            }
         }
 
-        if (data.detail?.action === EventActions.CLOSE) {
-            navigate("/");
+        if (data.detail?.action === 'CLOSE' || data.detail?.action === 'RETRY_COUNTER_EXCEEDED') {
+            setDocumentCheckStarted(false);
         }
     }, []);
 
@@ -109,45 +100,29 @@ const RegulaDocsReader = () => {
         const containerCurrent = containerRef.current;
         if (!containerCurrent) return;
 
-        containerCurrent.addEventListener('document-reader', regulaListener);
-
-        const elementRefCurrent = elementRef.current;
-        
-        if (!elementRefCurrent) return;
-        
-        elementRefCurrent.settings = {
-            serviceUrl: 'https://mfcrgla.mfc.staging-traveloka.com',
-            regulaLogo: false,
-            internalScenario: InternalScenarios.Locate,
-            captureButton: true,
-            changeCameraButton: true,
-            closeButton: false,
-            captureMode: 'auto',
-            cameraMode: 'environment'
-        };
-        console.log(elementRefCurrent.settings);
-        console.log(elementRefCurrent);
+        containerCurrent.addEventListener('face-liveness', regulaListener);
         return () => {
             window.RegulaDocumentSDK.shutdown();
-            containerCurrent.removeEventListener('document-reader', regulaListener);
+            containerCurrent.removeEventListener('face-liveness', regulaListener);
         }
     }, [regulaListener]);
 
     useEffect(() => {
         const elementRefCurrent = elementRef.current;
         
-        if (!elementRefCurrent) return;
+        if (!elementRefCurrent || !documentCheckStarted) return;
         
         elementRefCurrent.settings = {
-            serviceUrl: 'https://mfcrgla.mfc.staging-traveloka.com',
-            regulaLogo: false,
-            internalScenario: InternalScenarios.Locate,
-            captureButton: true,
-            changeCameraButton: true,
-            closeButton: false,
-            captureMode: 'auto',
-            cameraMode: 'environment'
-        };
+                headers: {
+                    Test: 'Test',
+                },
+                tag: '123',
+                customization: {
+                    onboardingScreenStartButtonBackground: '#5b5050',
+                },
+                // workerPath: 'https://nightly-api.regulaforensics.com',
+                // url: 'https://nightly-api.regulaforensics.com',
+            }
         console.log(elementRefCurrent.settings);
         console.log(elementRefCurrent);
     }, [documentCheckStarted])
@@ -157,7 +132,7 @@ const RegulaDocsReader = () => {
             <div ref={containerRef} style={containerStyle}>
             {
                 documentCheckStarted ? (
-                        <document-reader ref={elementRef}></document-reader>
+                    <face-liveness ref={elementRef}></face-liveness>
                 ) : (
         <>
             <Segment inverted color="blue" style={{
@@ -269,6 +244,4 @@ const RegulaDocsReader = () => {
     )
 }
 
-export default RegulaDocsReader;
-
-
+export default RegulaWithLiveness;

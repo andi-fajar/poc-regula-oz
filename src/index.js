@@ -8,8 +8,10 @@ import RegulaDocsReader from './regula/RegulaDocsReader';
 import reportWebVitals from './reportWebVitals';
 import ResultTabs from './regula/result/ResultTab';
 import HealthCheck from './HealthCheck';
+import RegulaLiveness from './regula/RegulaLiveness'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { DocumentReaderService } from '@regulaforensics/vp-frontend-document-components';
+import '@regulaforensics/vp-frontend-face-components';
 import 'semantic-ui-css/semantic.min.css';
 
 window.RegulaDocumentSDK = new DocumentReaderService();
@@ -47,6 +49,7 @@ root.render(
         <Route path="/" element={<Home />} />
         <Route path="/regula-doc" element={<RegulaDocsReader />} />
         <Route path="/regula-doc-liveness" element={<RegulaDocsLiveness />} />
+        <Route path="/regula-liveness" element={<RegulaLiveness />} />
         <Route path="/regula/result" element={<ResultTabs />} />
         <Route path="/oz-liveness" element={<Oz />} />
         <Route path="/healthcheck" element={<HealthCheck />} />
