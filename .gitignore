@@ -9,7 +9,8 @@
 /coverage
 
 # production
-/build
+# Sengaja biar gausa build2an
+# /build
 
 # misc
 .DS_Store
