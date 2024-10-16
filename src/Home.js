@@ -59,6 +59,7 @@ function Home() {
           >
             OZ Liveness
           </Button>
+          <Header as={"h5"} style={{ textAlign: 'center' }}>ID Check + Potrait Comparison:</Header>
           <Button
             fluid
             size="large"
