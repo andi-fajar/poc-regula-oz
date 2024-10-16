@@ -1,95 +1,34 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Segment, Header, Button, Grid, GridRow, GridColumn, Modal, Icon, ModalContent, ModalActions, Checkbox } from 'semantic-ui-react';
-import { isEmpty } from 'lodash';
+import { Segment, Header, Button, Grid, GridRow, GridColumn, Modal, Icon, ModalContent, ModalActions, Image } from 'semantic-ui-react';
+import { isEmpty, get } from 'lodash';
 import { useNavigate } from 'react-router-dom';
-import ResultTabs from './result/ResultTab';
 import {
-    // EventActions,
     defineComponents,
-    // InternalScenarios
   } from '@regulaforensics/vp-frontend-document-components';
-  import {
-    DocumentReaderApi,
-    GraphicFieldType,
-    Scenario,
-    LCID,
-    DocumentType
-} from '@regulaforensics/document-reader-webclient';
-// import { FaceLivenessDetailType, FaceLivenessWebComponent } from '@regulaforensics/vp-frontend-face-components';
-
 
 const RegulaWithLiveness = () => {
     const navigate = useNavigate();
     const [isResultOpen, setIsResultOpen] = useState(false);
     const containerRef = useRef(null);
     const elementRef = useRef(null);
-    // const configuration = { basePath: 'https://nightly-api.regulaforensics.com' };
-    const configuration = { basePath: 'https://mfcrgla.mfc.staging-traveloka.com' };
-    const api = new DocumentReaderApi(configuration);
-    const [readerResult, setReaderResult] = useState({});
-    const [isLoading, setLoading] = useState(false);
-    const [documentCheckStarted, setDocumentCheckStarted] = useState(false)
-
-    const [checkRequest, setCheckRequest] = useState({});
-    const [checkResponse, setCheckResponse] = useState({});
-    const [checkIdCardOnly, setCheckIdCardOnly] = useState(true)
-
+    const [livenessResult, setLivenessResult] = useState({});
+    const [livenessCheckStarted, setLivenessCheckStarted] = useState(false)
 
     const containerStyle = {
         justifyContent: 'center',
         alignItems: 'center'
       };
 
-    const showResult = async () => {
-        await requestOcr();
-        setIsResultOpen(true)
-    }
-
-    const requestOcr = async () => {
-        console.log(readerResult);
-        const imageField = readerResult.images.getField(GraphicFieldType.DOCUMENT_FRONT);
-        const documentFront = imageField.valueList[0].value;
-        const processParam = {
-            images: [ documentFront ],
-            processParam: {
-                scenario: Scenario.OCR,
-                documentIdList: checkIdCardOnly ? [
-                    509424248,
-                    1218661532,
-                    1218661610,
-                    1459656144,
-                    -1664376400,
-                    407567256,
-                    427237424,
-                    517293153,
-                    517872759,
-                    1030278437,
-                    1218661366,
-                    1218661451
-                ] : [],
-                lcidFilter: LCID.INDONESIAN,
-                documentGroupFilter: checkIdCardOnly ? [DocumentType.IDENTITY_CARD] : [],
-                checkAuth: true
-            }
-        }
-        setLoading(true);
-        const ocrResult = await api.process(processParam);
-        setLoading(false)
-        console.log("OCR RESULT:")
-        console.log(ocrResult);
-        setCheckResponse(ocrResult.rawResponse);
-        setCheckRequest(processParam);
-    }
-
     const regulaListener = useCallback(async (data) => {
         if (data.detail.action === 'PROCESS_FINISHED') {
             if (data.detail.data?.status === 1 && data.detail.data.response) {
                 console.log(data.detail.data.response);
+                setLivenessResult(data.detail.data.response);
             }
         }
 
         if (data.detail?.action === 'CLOSE' || data.detail?.action === 'RETRY_COUNTER_EXCEEDED') {
-            setDocumentCheckStarted(false);
+            setLivenessCheckStarted(false);
         }
     }, []);
 
@@ -110,28 +49,33 @@ const RegulaWithLiveness = () => {
     useEffect(() => {
         const elementRefCurrent = elementRef.current;
         
-        if (!elementRefCurrent || !documentCheckStarted) return;
+        if (!elementRefCurrent || !livenessCheckStarted) return;
         
         elementRefCurrent.settings = {
                 headers: {
                     Test: 'Test',
                 },
-                tag: '123',
                 customization: {
-                    onboardingScreenStartButtonBackground: '#5b5050',
+                    onboardingScreenStartButtonBackground: '#2185d0',
+                    onboardingScreenStartButtonBackgroundHover: '#88d9ff',
+                    cameraScreenSectorActive: '#1969e9',
+                    cameraScreenSectorTarget: '#47d2ee',
+                    cameraScreenStrokeNormal: '#16b1ee',
+                    processingScreenProgress: '#046bb9',
+                    retryScreenRetryButtonBackground: '#2185d0',
+                    retryScreenRetryButtonBackgroundHover: '#88d9ff'
                 },
-                // workerPath: 'https://nightly-api.regulaforensics.com',
                 url: 'https://mfcrgla.mfc.staging-traveloka.com',
             }
         console.log(elementRefCurrent.settings);
         console.log(elementRefCurrent);
-    }, [documentCheckStarted])
+    }, [livenessCheckStarted])
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <div ref={containerRef} style={containerStyle}>
             {
-                documentCheckStarted ? (
+                livenessCheckStarted ? (
                     <face-liveness ref={elementRef}></face-liveness>
                 ) : (
         <>
@@ -147,7 +91,7 @@ const RegulaWithLiveness = () => {
             margin: 0,
             borderRadius: 0
             }} textAlign="center" padded="very">
-            <Header as="h1" content="Regula Doc" />
+            <Header as="h1" content="Regula Liveness" />
             </Segment>
             <Grid divided='vertically' style={{
                             position: 'absolute',
@@ -160,29 +104,22 @@ const RegulaWithLiveness = () => {
                             justifyContent: 'center'
                             }}>
                 {
-                    isEmpty(readerResult) ? (
+                    isEmpty(livenessResult) ? (
                         <GridRow columns={1} centered>
                             <GridColumn textAlign='center' centered>
-                                <Header as="h4">{`Please prepare your ${checkIdCardOnly ? 'e-KTP' : 'document'}`}</Header>
+                                <Header as="h4">Let's take selfie picture</Header>
                             </GridColumn>
                             <GridColumn textAlign='center' centered>
-                                <Button onClick={() => setDocumentCheckStarted(true)}>Click when ready</Button>
+                                <Button onClick={() => setLivenessCheckStarted(true)}>Click when you ready</Button>
                             </GridColumn>
                             <GridColumn textAlign='center' centered>
                                 <></>
-                            </GridColumn>
-                            <GridColumn textAlign='center' centered style={{ maxWidth: '500px' }}>
-                                <Checkbox toggle checked={checkIdCardOnly} onChange={(e, data) => setCheckIdCardOnly(data.checked)} 
-                                        label='Check Indonesian ID Card only (e-KTP)'/>
-                            </GridColumn>
-                            <GridColumn textAlign='center' centered>
-                                {!checkIdCardOnly ? <>Supported documents can be found <a href='https://docs.google.com/spreadsheets/d/1tEjV_S2GQWmt4SVjJfoKcbd85Ixont3dNMCsawo6MjU/edit?gid=888941511#gid=888941511'>here</a></> : ''}
                             </GridColumn>
                         </GridRow>
                     ) : (
                         <GridRow columns={1} centered>
                             <GridColumn textAlign='center' centered>
-                                <Header as="h3">ID Card Check Completed!</Header>
+                                <Header as="h3">Liveness check completed!</Header>
                             </GridColumn>
                         </GridRow>
                     )
@@ -193,7 +130,7 @@ const RegulaWithLiveness = () => {
                         <Button onClick={() => navigate("/")}>Back</Button>
                     </GridColumn>
                     <GridColumn textAlign='center'>
-                        <Button loading={isLoading} disabled={isEmpty(readerResult) || isLoading} onClick={() => showResult()}>Show result</Button>
+                        <Button disabled={isEmpty(livenessResult)} onClick={() => setIsResultOpen(true)}>Show result</Button>
                     </GridColumn>
                 </GridRow>
             </Grid>
@@ -206,12 +143,33 @@ const RegulaWithLiveness = () => {
                 open={isResultOpen}
                 size='small'
             >
-                <Header icon='archive' content='Result' />
+               <Header icon='archive' content='Result' />
                 <ModalContent>
-                    <ResultTabs response={checkResponse} request={checkRequest} language="en" ></ResultTabs>
+                <Grid divided='vertically'>
+                    <GridRow columns={1}>
+                    <GridColumn>
+                        <Header as='h3'>{`Liveness Result:`}</Header>
+                        <Header as='h2'>{get(livenessResult, 'status') === 0 ? "SUCCESS" :  (get(livenessResult, 'status') === 1 ? "REJECTED" : "UNKNOWN" )}</Header>
+                    </GridColumn>
+                    </GridRow>
+                    <GridRow columns={1}>
+                        <GridColumn>
+                            <Header as='h4'>{`Estimated age : ${get(livenessResult, 'estimatedAge', 'UNKNOWN')}`}</Header>
+                        </GridColumn>
+                    </GridRow>
+                    <GridRow columns={1}>
+                    <GridColumn>
+                        <Header as='h3'>Best Frame</Header>
+                    </GridColumn>
+                    <GridColumn>
+                        <Image src={"data:image/jpg;base64, " + get(livenessResult, 'images.0', '')} size='large' />
+                    </GridColumn>
+                    </GridRow>
+                    
+                </Grid>  
                 </ModalContent>
                 <ModalActions>
-                <Button basic onClick={() => navigator.clipboard.writeText(JSON.stringify(checkResponse))}>
+                <Button basic onClick={() => navigator.clipboard.writeText(JSON.stringify(livenessResult))}>
                     <Icon name='copy' /> Copy Raw Response
                 </Button>
                 <Button basic color='red' onClick={() => setIsResultOpen(false)}>

@@ -9,11 +9,19 @@ function Home() {
   }
 
   const handleRegulaLiveness = () => {
-    navigate("/regula-doc-liveness");
+    navigate("/regula-liveness");
   }
 
   const handleOz = () => {
     navigate("/oz-liveness");
+  }
+
+  const handleRegulaDocsLiveness = () => {
+    navigate("/regula-doc-liveness");
+  }
+
+  const handleRegulaDocsOz = () => {
+    navigate("/regula-doc-liveness");
   }
 
   return (
@@ -40,15 +48,33 @@ function Home() {
             onClick={() => handleRegulaLiveness()}
             style={{ marginBottom: '1rem' }}
           >
-            Regula Document reader + Regula liveness
+            Regula Liveness
           </Button>
           <Button
             fluid
             size="large"
             color="green"
             onClick={() => handleOz()}
+            style={{ marginBottom: '1rem' }}
           >
             OZ Liveness
+          </Button>
+          <Button
+            fluid
+            size="large"
+            color="blue"
+            onClick={() => handleRegulaDocsLiveness()}
+            style={{ marginBottom: '1rem' }}
+          >
+            Regula Docs + Liveness
+          </Button>
+          <Button
+            fluid
+            size="large"
+            color="blue"
+            onClick={() => handleRegulaDocsOz()}
+          >
+            Regula Docs + OZ Liveness
           </Button>
         </div>
       </Container>
