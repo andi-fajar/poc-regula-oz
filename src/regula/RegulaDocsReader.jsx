@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Segment, Header, Button, Grid, GridRow, GridColumn, Modal, Icon, ModalContent, ModalActions, Checkbox } from 'semantic-ui-react';
 import { isEmpty } from 'lodash';
 import { useNavigate } from 'react-router-dom';
+import { basePath } from '../config';
 import ResultTabs from './result/ResultTab';
 import {
     EventActions,
@@ -23,7 +24,7 @@ const RegulaDocsReader = () => {
     const containerRef = useRef(null);
     const elementRef = useRef(null);
     // const configuration = { basePath: 'https://nightly-api.regulaforensics.com' };
-    const configuration = { basePath: 'https://mfcrgla.mfc.staging-traveloka.com' };
+    const configuration = { basePath: basePath };
     const api = new DocumentReaderApi(configuration);
     const [readerResult, setReaderResult] = useState({});
     const [isLoading, setLoading] = useState(false);
@@ -116,7 +117,7 @@ const RegulaDocsReader = () => {
         if (!elementRefCurrent) return;
         
         elementRefCurrent.settings = {
-            serviceUrl: 'https://mfcrgla.mfc.staging-traveloka.com',
+            serviceUrl: basePath,
             regulaLogo: false,
             internalScenario: InternalScenarios.Locate,
             captureButton: true,
@@ -139,7 +140,7 @@ const RegulaDocsReader = () => {
         if (!elementRefCurrent) return;
         
         elementRefCurrent.settings = {
-            serviceUrl: 'https://mfcrgla.mfc.staging-traveloka.com',
+            serviceUrl: basePath,
             regulaLogo: false,
             internalScenario: InternalScenarios.Locate,
             captureButton: true,

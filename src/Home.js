@@ -67,15 +67,7 @@ function Home() {
             onClick={() => handleRegulaDocsLiveness()}
             style={{ marginBottom: '1rem' }}
           >
-            Regula Docs + Liveness
-          </Button>
-          <Button
-            fluid
-            size="large"
-            color="blue"
-            onClick={() => handleRegulaDocsOz()}
-          >
-            Regula Docs + OZ Liveness
+            Regula Docs + Regula Liveness
           </Button>
         </div>
       </Container>

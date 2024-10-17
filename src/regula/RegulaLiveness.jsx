@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import {
     defineComponents,
   } from '@regulaforensics/vp-frontend-document-components';
+import { basePath } from '../config';
 
 const RegulaWithLiveness = () => {
     const navigate = useNavigate();
@@ -24,11 +25,10 @@ const RegulaWithLiveness = () => {
             if (data.detail.data?.status === 1 && data.detail.data.response) {
                 console.log(data.detail.data.response);
                 setLivenessResult(data.detail.data.response);
-                setLivenessCheckStarted(false);
             }
         }
 
-        if (data.detail?.action === 'CLOSE' || data.detail?.action === 'RETRY_COUNTER_EXCEEDED') {
+        if (data.detail?.action === 'CLOSE' || data.detail?.action === 'RETRY_COUNTER_EXCEEDED' || get(data, 'detail.data.response.code') === 0) {
             setLivenessCheckStarted(false);
         }
     }, []);
@@ -66,7 +66,8 @@ const RegulaWithLiveness = () => {
                     retryScreenRetryButtonBackground: '#2185d0',
                     retryScreenRetryButtonBackgroundHover: '#88d9ff'
                 },
-                url: 'https://mfcrgla.mfc.staging-traveloka.com',
+                url: basePath,
+                retryCount: 3
             }
         console.log(elementRefCurrent.settings);
         console.log(elementRefCurrent);
@@ -151,6 +152,11 @@ const RegulaWithLiveness = () => {
                     <GridColumn>
                         <Header as='h3'>{`Liveness Result:`}</Header>
                         <Header as='h2'>{get(livenessResult, 'status') === 0 ? "SUCCESS" :  (get(livenessResult, 'status') === 1 ? "REJECTED" : "UNKNOWN" )}</Header>
+                        {get(livenessResult, 'status') === 1 && <>
+                            <p>{`Rejection reason: ${get(livenessResult, 'code')}`} 
+                                <a href="https://docs.regulaforensics.com/develop/face-sdk/web-service/development/enums/face-sdk-result-code/" target="_blank" rel="noopener noreferrer"> (reference)</a>
+                            </p>
+                        </>} 
                     </GridColumn>
                     </GridRow>
                     <GridRow columns={1}>

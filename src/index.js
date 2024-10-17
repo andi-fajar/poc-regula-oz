@@ -10,6 +10,7 @@ import ResultTabs from './regula/result/ResultTab';
 import HealthCheck from './HealthCheck';
 import RegulaLiveness from './regula/RegulaLiveness'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { basePath } from './config';
 import { DocumentReaderService } from '@regulaforensics/vp-frontend-document-components';
 import '@regulaforensics/vp-frontend-face-components';
 import 'semantic-ui-css/semantic.min.css';
@@ -30,7 +31,7 @@ window.RegulaDocumentSDK.recognizerProcessParam = {
         maxGlaringPart: 0.01,
       },
       backendProcessing: {
-        serviceURL: 'https://mfcrgla.mfc.staging-traveloka.com'
+        serviceURL: basePath
       }
     },
   }
