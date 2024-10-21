@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Segment, Header, Grid, GridRow, GridColumn, Modal, Button, Icon, ModalContent, Image, ImageGroup, ModalActions, Dropdown, Label } from 'semantic-ui-react';
+import { Segment, Header, Grid, GridRow, GridColumn, Modal, Button, Icon, ModalContent, Image, ImageGroup, ModalActions, Dropdown, Label, Tab, TabPane } from 'semantic-ui-react';
 import { isEmpty, get } from 'lodash';
 import { useNavigate } from 'react-router-dom';
+import { JsonViewer } from '@regulaforensics/ui-components'
 
 
 const containerStyle = {
@@ -36,6 +37,67 @@ const Oz = () => {
           setCaptureResult(result)
         },
     });
+  }
+
+  const renderResultModal = () => {
+
+    const panes = [
+      { menuItem: 'Result', render: () => <TabPane>
+        <Grid divided='vertically'>
+            <GridRow columns={1}>
+              <GridColumn>
+                <Header as='h3'>{`Liveness Result:`}</Header>
+                <Header as='h2'>{get(livenessResult, 'folder_state')}</Header>
+              </GridColumn>
+            </GridRow>
+            <GridRow columns={1}>
+              <GridColumn>
+                <Header as='h3'>Best Frame</Header>
+              </GridColumn>
+              <GridColumn>
+                <Image src={get(captureResult, 'best_frame', '')} size='large' />
+              </GridColumn>
+            </GridRow>
+            <GridRow columns={1}>
+              <GridColumn>
+                <Header as='h3'>Other Frame Captured:</Header>
+              </GridColumn>
+              <GridColumn>
+                <ImageGroup size='small'>
+                  { get(captureResult, 'frame_list', ['123']).map((element, index) => 
+                    <Image key={`index${index}`} src={element} />  
+                  ) }
+                </ImageGroup>
+              </GridColumn>
+            </GridRow>
+          </Grid>  
+
+      </TabPane> },
+      { menuItem: 'Raw Response', render: () => <TabPane>
+        <JsonViewer data={captureResult}></JsonViewer>
+      </TabPane> }
+    ]
+
+    return <Modal
+        closeIcon
+        onClose={() => setResultModalShown(false)}
+        onOpen={() => setResultModalShown(true)}
+        open={resultModalShown}
+        size='small'
+    >
+        <Header icon='archive' content='Result' />
+        <ModalContent>
+          <Tab panes={panes} />
+        </ModalContent>
+        <ModalActions>
+        <Button basic onClick={() => navigator.clipboard.writeText(JSON.stringify(captureResult))}>
+            <Icon name='copy' /> Copy Raw Response
+        </Button>
+        <Button basic color='red' onClick={() => setResultModalShown(false)}>
+            <Icon name='remove' /> Close
+        </Button>
+        </ModalActions>
+    </Modal>
   }
 
   const handleChangeMode = (event, data) => {
@@ -110,54 +172,7 @@ const Oz = () => {
             </GridRow>
         </Grid>
   
-    
-        <Modal
-            closeIcon
-            onClose={() => setResultModalShown(false)}
-            onOpen={() => setResultModalShown(true)}
-            open={resultModalShown}
-            size='small'
-        >
-            <Header icon='archive' content='Result' />
-            <ModalContent>
-              <Grid divided='vertically'>
-                <GridRow columns={1}>
-                  <GridColumn>
-                    <Header as='h3'>{`Liveness Result:`}</Header>
-                    <Header as='h2'>{get(livenessResult, 'folder_state')}</Header>
-                  </GridColumn>
-                </GridRow>
-                <GridRow columns={1}>
-                  <GridColumn>
-                    <Header as='h3'>Best Frame</Header>
-                  </GridColumn>
-                  <GridColumn>
-                    <Image src={get(captureResult, 'best_frame', '')} size='large' />
-                  </GridColumn>
-                </GridRow>
-                <GridRow columns={1}>
-                  <GridColumn>
-                    <Header as='h3'>Other Frame Captured:</Header>
-                  </GridColumn>
-                  <GridColumn>
-                    <ImageGroup size='small'>
-                      { get(captureResult, 'frame_list', ['123']).map((element, index) => 
-                        <Image key={`index${index}`} src={element} />  
-                      ) }
-                    </ImageGroup>
-                  </GridColumn>
-                </GridRow>
-              </Grid>  
-            </ModalContent>
-            <ModalActions>
-            <Button basic onClick={() => navigator.clipboard.writeText(JSON.stringify(captureResult))}>
-                <Icon name='copy' /> Copy Raw Response
-            </Button>
-            <Button basic color='red' onClick={() => setResultModalShown(false)}>
-                <Icon name='remove' /> Close
-            </Button>
-            </ModalActions>
-        </Modal>
+        { renderResultModal() }
     
   
         <Segment style={{
