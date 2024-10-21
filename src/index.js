@@ -14,6 +14,7 @@ import { basePath } from './config';
 import { DocumentReaderService } from '@regulaforensics/vp-frontend-document-components';
 import '@regulaforensics/vp-frontend-face-components';
 import 'semantic-ui-css/semantic.min.css';
+import AaiLiveness from './aai/AaiLiveness';
 
 window.RegulaDocumentSDK = new DocumentReaderService();
 window.RegulaDocumentSDK.recognizerProcessParam = {
@@ -54,6 +55,7 @@ root.render(
         <Route path="/regula/result" element={<ResultTabs />} />
         <Route path="/oz-liveness" element={<Oz />} />
         <Route path="/healthcheck" element={<HealthCheck />} />
+        <Route path='/aai-liveness' element={<AaiLiveness />} />
       </Routes>
     </Router>
   </React.StrictMode>

@@ -20,8 +20,12 @@ function Home() {
     navigate("/regula-doc-liveness");
   }
 
-  const handleRegulaDocsOz = () => {
-    navigate("/regula-doc-liveness");
+  const handleAaiLivenes = () => {
+    navigate("/aai-liveness");
+  }
+
+  const handleAaiOcr = () => {
+    navigate("/aai-ocr");
   }
 
   return (
@@ -44,7 +48,7 @@ function Home() {
           <Button
             fluid
             size="large"
-            color="green"
+            color="blue"
             onClick={() => handleRegulaLiveness()}
             style={{ marginBottom: '1rem' }}
           >
@@ -53,17 +57,35 @@ function Home() {
           <Button
             fluid
             size="large"
-            color="green"
+            color="blue"
             onClick={() => handleOz()}
             style={{ marginBottom: '1rem' }}
           >
             OZ Liveness
           </Button>
-          <Header as={"h5"} style={{ textAlign: 'center' }}>ID Check + Potrait Comparison:</Header>
+          <Button
+            fluid
+            size="large"
+            color="green"
+            onClick={() => handleAaiOcr()}
+            style={{ marginBottom: '1rem' }}
+          >
+            Advance AI OCR
+          </Button>
           <Button
             fluid
             size="large"
             color="blue"
+            onClick={() => handleAaiLivenes()}
+            style={{ marginBottom: '1rem' }}
+          >
+            Advance AI Liveness
+          </Button>
+          <Header as={"h5"} style={{ textAlign: 'center' }}>ID Check + Potrait Comparison:</Header>
+          <Button
+            fluid
+            size="large"
+            color="teal"
             onClick={() => handleRegulaDocsLiveness()}
             style={{ marginBottom: '1rem' }}
           >

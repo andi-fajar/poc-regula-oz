@@ -2,40 +2,46 @@ import { useState } from 'react';
 import { Segment, Header, Grid, GridRow, GridColumn, Modal, Button, Icon, ModalContent, Image, ImageGroup, ModalActions, Dropdown, Label } from 'semantic-ui-react';
 import { isEmpty, get } from 'lodash';
 import { useNavigate } from 'react-router-dom';
+import { generateEncryptedAaiSignature, demoAaiLivenessSdkK3y } from '../config'
 
 
-const containerStyle = {
-  justifyContent: 'center',
-  alignItems: 'center'
-};
-
-
-const Oz = () => {
+const AaiLiveness = () => {
   const navigate = useNavigate();
   const [captureResult, setCaptureResult] = useState({});
   const [livenessResult, setLivenessResult] = useState({});
   const [livenessStarted, setLivenessStarted] = useState(false);
   const [resultModalShown, setResultModalShown] = useState(false);
-  const availableActions = ['video_selfie_left', 'video_selfie_right', 'video_selfie_down', 'video_selfie_high', 'video_selfie_smile', 'video_selfie_eyes', 'video_selfie_scan', 'video_selfie_best', 'video_selfie_blank']
   const [actions, setActions] = useState([])
 
-  const handleOpenDemo = () => {
-    setLivenessStarted(true)
-    window.OzLiveness.open({
-        action: (isEmpty(actions) ? null : actions),
-        on_error: result => console.error('on_error', result),
-        on_submit: result => console.log('on_submit', result),
-        on_result: result => console.log('on_result', result),
-        on_complete: result => {
-          console.log('on_complete', result);
-          setLivenessResult(result);
+   const generateToken = async () => {
+    const url = 'https://api.advance.ai/openapi/auth/ticket/v1/generate-token';
+    const { signature, timestamp} = await generateEncryptedAaiSignature()
+    const payload = {
+        accessKey: demoAaiLivenessSdkK3y,
+        signature,
+        timestamp
+    };
+    
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
         },
-        on_close: result => console.log('on_close', result),
-        on_capture_complete: result => {
-          console.log('on_capture_complete', result);
-          setCaptureResult(result)
-        },
+        body: JSON.stringify(payload)
     });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log(data)
+   }
+
+  const handleOpenDemo = async () => {
+    
+    await generateToken()
+    
   }
 
   const handleChangeMode = (event, data) => {
@@ -57,7 +63,7 @@ const Oz = () => {
           margin: 0,
           borderRadius: 0
         }} textAlign="center" padded="very">
-          <Header as="h1" content="Oz Liveness" />
+          <Header as="h1" content="AAI Liveness" />
         </Segment>
         <Grid divided='vertically' style={{
                         position: 'absolute',
@@ -77,14 +83,6 @@ const Oz = () => {
                         </GridColumn>
                        : 
                        <>
-                        <GridColumn style={{ maxWidth: '500px' }}>
-                          <Label>Select liveness check actions: </Label>
-                          <Dropdown placeholder='Random' fluid multiple selection options={availableActions.map(item => ({
-                            key: item,
-                            text: item.charAt(0).toUpperCase() + item.slice(1),
-                            value: item
-                          }))} onChange={handleChangeMode} />
-                        </GridColumn>
                         <GridColumn textAlign='center'>
                             <Button onClick={handleOpenDemo}>Click Here When You Ready</Button>
                         </GridColumn>
@@ -178,4 +176,4 @@ const Oz = () => {
     )
 }
 
-export default Oz;
+export default AaiLiveness;
