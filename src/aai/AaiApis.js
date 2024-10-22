@@ -36,6 +36,7 @@ export const generateToken = async () => {
     };
     
     const response = await fetch(url, {
+        mode: 'no-cors',
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -67,6 +68,7 @@ export const generateLivenessH5 = async (accessToken) => {
 
     try {
         const response = await fetch(url, {
+            mode: 'no-cors',
             method: 'POST',
             headers: {
                 'X-ACCESS-TOKEN': accessToken,
@@ -99,6 +101,7 @@ export const getLivenessResult = async (accessToken, signatureId) => {
 
     try {
         const response = await fetch(url, {
+            mode: 'no-cors',
             method: 'POST',
             headers: {
                 'X-ACCESS-TOKEN': accessToken,
