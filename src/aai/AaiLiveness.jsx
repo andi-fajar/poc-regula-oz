@@ -138,7 +138,7 @@ const AaiLiveness = () => {
                         }}>
             <GridRow columns={1} centered>
                     
-                      {!(isEmpty(successCode) || isEmpty(failCode)) ? 
+                      {!(isEmpty(successCode) && isEmpty(failCode)) ? 
                         <GridColumn textAlign='center' centered>
                           <Header as="h4">Liveness Check Complete</Header>
                           <Header as="h5">{`Result: ${successCode ? successCode : 'Fails'}`}</Header>
