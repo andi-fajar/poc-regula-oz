@@ -27,7 +27,7 @@ export const generateEncryptedAaiSignature = async () => {
 
 // JUST for demo purpose, this should be on BE!!!
 export const generateToken = async () => {
-    const url = 'openapi/auth/ticket/v1/generate-token';
+    const url = 'https://cors-anywhere.herokuapp.com/https://api.advance.ai/openapi/auth/ticket/v1/generate-token';
     const { signature, timestamp} = await generateEncryptedAaiSignature()
     const payload = {
         accessKey: demoAaiLivenessSdkK3y,
@@ -55,7 +55,7 @@ export const generateToken = async () => {
 
 // JUST for demo purpose, this should be on BE!!!
 export const generateLivenessH5 = async (accessToken) => {
-    const url = 'openapi/liveness/v2/h5/token';
+    const url = 'https://cors-anywhere.herokuapp.com/https://api.advance.ai/openapi/liveness/v2/h5/token';
     
     const payload = {
         returnUrl: host + "/aai-liveness",
@@ -91,7 +91,7 @@ export const generateLivenessH5 = async (accessToken) => {
 
 // JUST for demo purpose, this should be on BE!!!
 export const getLivenessResult = async (accessToken, signatureId) => {
-    const url = 'openapi/liveness/v4/h5/get-result';
+    const url = 'https://cors-anywhere.herokuapp.com/https://api.advance.ai/openapi/liveness/v4/h5/get-result';
     
     const payload = {
         signatureId
