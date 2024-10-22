@@ -31,7 +31,7 @@ function Home() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Segment inverted color="blue" textAlign="center" padded="very">
-        <Header as="h1" content="POC OZ/Regula" />
+        <Header as="h1" content="POC IC and Liveness" />
       </Segment>
 
       <Container style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

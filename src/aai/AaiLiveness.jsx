@@ -1,53 +1,114 @@
-import { useState } from 'react';
-import { Segment, Header, Grid, GridRow, GridColumn, Modal, Button, Icon, ModalContent, Image, ImageGroup, ModalActions, Dropdown, Label } from 'semantic-ui-react';
+import { useEffect, useState } from 'react';
+import { Segment, Header, Grid, GridRow, GridColumn, Modal, Button, Icon, ModalContent, Image, ImageGroup, ModalActions, Tab, TabPane } from 'semantic-ui-react';
 import { isEmpty, get } from 'lodash';
-import { useNavigate } from 'react-router-dom';
-import { generateEncryptedAaiSignature, demoAaiLivenessSdkK3y } from '../config'
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { generateEncryptedAaiSignature, generateToken, generateLivenessH5, getLivenessResult } from './AaiApis'
+import useCookie from '../tools/useCookie';
+import useQuery from '../tools/useQuery';
+import { JsonViewer } from '@regulaforensics/ui-components';
 
 
 const AaiLiveness = () => {
   const navigate = useNavigate();
-  const [captureResult, setCaptureResult] = useState({});
+  const [loadingGenerate, setLoadingGenerate] = useState(false);
   const [livenessResult, setLivenessResult] = useState({});
-  const [livenessStarted, setLivenessStarted] = useState(false);
   const [resultModalShown, setResultModalShown] = useState(false);
-  const [actions, setActions] = useState([])
+  const [loadingResult, setLoadingResult] = useState(false);
+  const [signatureId, setSignatureId, deleteSignatureId] = useCookie('aaiSignatureId', null);
+//   const [transactionId, setTransactionId, deleteTransactionId] = useCookie('aaiTransactionId', null);
+  const { successCode, failCode, message } = useQuery();
 
-   const generateToken = async () => {
-    const url = 'https://api.advance.ai/openapi/auth/ticket/v1/generate-token';
-    const { signature, timestamp} = await generateEncryptedAaiSignature()
-    const payload = {
-        accessKey: demoAaiLivenessSdkK3y,
-        signature,
-        timestamp
-    };
-    
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+  useEffect(() => {
+    // uncomment later
+    if (!successCode) {
+        console.log("delete previous session")
+        deleteSignatureId();
     }
-
-    const data = await response.json();
-    console.log(data)
-   }
+  }, []);
 
   const handleOpenDemo = async () => {
     
-    await generateToken()
-    
+    setLoadingGenerate(true)
+    const tokenRawResponse = await generateToken();
+    const h5LivenessResponse = await generateLivenessH5(tokenRawResponse.data.token)
+    setSignatureId(h5LivenessResponse.data.signatureId)
+    setLoadingGenerate(false)
+
+    window.location.replace(h5LivenessResponse.data.url)
   }
 
-  const handleChangeMode = (event, data) => {
-    console.log(data.value);
-    setActions(data.value);
-  };
+  const getResult = async () => {
+    if (!signatureId) return;
+
+    setLoadingResult(true);
+    const tokenRawResponse = await generateToken();
+    const response = await getLivenessResult(tokenRawResponse.data.token, signatureId)
+    setLoadingResult(false)
+    console.log(response)
+    setLivenessResult(response)
+    setTimeout(() => setResultModalShown(true), 500);
+  }
+
+
+
+  const renderResultModal = () => {
+    const panes = [
+      { menuItem: 'Result', render: () => <TabPane>
+         <Grid divided='vertically'>
+            <GridRow columns={1}>
+                <GridColumn>
+                <Header as='h3'>{`Liveness Result: ${successCode}`}</Header>
+                <Header as='h2'>{`Score : ${get(livenessResult, 'data.score')}`}</Header>
+                </GridColumn>
+            </GridRow>
+            <GridRow columns={1}>
+                <GridColumn>
+                <Header as='h3'>Best Frame</Header>
+                </GridColumn>
+                <GridColumn>
+                <Image src={"data:image/jpg;base64, " + get(livenessResult, 'data.image', '')} size='large' />
+                </GridColumn>
+            </GridRow>
+            <GridRow columns={1}>
+                <GridColumn>
+                <Header as='h3'>Other Frame Captured:</Header>
+                </GridColumn>
+                <GridColumn>
+                <ImageGroup size='small'>
+                    { !isEmpty(get(livenessResult, 'data.imageFar', '')) && <Image src={"data:image/jpg;base64, " + get(livenessResult, 'data.imageFar', '')} />  }
+                    { !isEmpty(get(livenessResult, 'data.imageNear', '')) && <Image src={"data:image/jpg;base64, " + get(livenessResult, 'data.imageNear', '')} />  }
+                </ImageGroup>
+                </GridColumn>
+            </GridRow>
+            </Grid>  
+
+      </TabPane> },
+      { menuItem: 'Raw Response', render: () => <TabPane>
+        <JsonViewer data={livenessResult}></JsonViewer>
+      </TabPane> }
+    ]
+
+    return <Modal
+        closeIcon
+        onClose={() => setResultModalShown(false)}
+        onOpen={() => setResultModalShown(true)}
+        open={resultModalShown}
+        size='small'
+    >
+        <Header icon='archive' content='Result' />
+        <ModalContent>
+          <Tab panes={panes} />
+        </ModalContent>
+        <ModalActions>
+        <Button basic onClick={() => navigator.clipboard.writeText(JSON.stringify(livenessResult))}>
+            <Icon name='copy' /> Copy Raw Response
+        </Button>
+        <Button basic color='red' onClick={() => setResultModalShown(false)}>
+            <Icon name='remove' /> Close
+        </Button>
+        </ModalActions>
+    </Modal>
+  }
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -77,85 +138,35 @@ const AaiLiveness = () => {
                         }}>
             <GridRow columns={1} centered>
                     
-                      {livenessStarted ? 
+                      {!(isEmpty(successCode) || isEmpty(failCode)) ? 
                         <GridColumn textAlign='center' centered>
                           <Header as="h4">Liveness Check Complete</Header>
+                          <Header as="h5">{`Result: ${successCode ? successCode : 'Fails'}`}</Header>
+                          { message && <Header as="h6">{message}</Header> }
+                          { failCode && <Header as="h6">{failCode}</Header> }
                         </GridColumn>
                        : 
                        <>
                         <GridColumn textAlign='center'>
-                            <Button onClick={handleOpenDemo}>Click Here When You Ready</Button>
+                            <Button onClick={handleOpenDemo} loading={loadingGenerate} disabled={loadingGenerate}>Click Here When You Ready</Button>
                         </GridColumn>
                        </>
 }  
                     
             </GridRow>
             <GridRow columns={2}>
-                
-                  {livenessStarted ? 
-                    <>
-                      <GridColumn textAlign='center'>
-                          <Button onClick={() => navigate("/")}>Back</Button>
-                      </GridColumn>
-                      <GridColumn textAlign='center'>
-                          <Button loading={isEmpty(livenessResult) || isEmpty(captureResult)} disabled={isEmpty(livenessResult)} onClick={() => setResultModalShown(true)}>Show result</Button>
-                      </GridColumn>
-                    </>
-                   : 
-                    <div></div>
-                  }
-                
+                <GridColumn textAlign='center'>
+                    <Button onClick={() => navigate("/")}>Back</Button>
+                </GridColumn>
+                <GridColumn textAlign='center'>
+                    <Button loading={loadingResult} disabled={(isEmpty(successCode) && isEmpty(failCode)) || loadingResult} onClick={() => getResult()}>Show result</Button>
+                </GridColumn>
+        
             </GridRow>
         </Grid>
   
     
-        <Modal
-            closeIcon
-            onClose={() => setResultModalShown(false)}
-            onOpen={() => setResultModalShown(true)}
-            open={resultModalShown}
-            size='small'
-        >
-            <Header icon='archive' content='Result' />
-            <ModalContent>
-              <Grid divided='vertically'>
-                <GridRow columns={1}>
-                  <GridColumn>
-                    <Header as='h3'>{`Liveness Result:`}</Header>
-                    <Header as='h2'>{get(livenessResult, 'folder_state')}</Header>
-                  </GridColumn>
-                </GridRow>
-                <GridRow columns={1}>
-                  <GridColumn>
-                    <Header as='h3'>Best Frame</Header>
-                  </GridColumn>
-                  <GridColumn>
-                    <Image src={get(captureResult, 'best_frame', '')} size='large' />
-                  </GridColumn>
-                </GridRow>
-                <GridRow columns={1}>
-                  <GridColumn>
-                    <Header as='h3'>Other Frame Captured:</Header>
-                  </GridColumn>
-                  <GridColumn>
-                    <ImageGroup size='small'>
-                      { get(captureResult, 'frame_list', ['123']).map((element, index) => 
-                        <Image key={`index${index}`} src={element} />  
-                      ) }
-                    </ImageGroup>
-                  </GridColumn>
-                </GridRow>
-              </Grid>  
-            </ModalContent>
-            <ModalActions>
-            <Button basic onClick={() => navigator.clipboard.writeText(JSON.stringify(captureResult))}>
-                <Icon name='copy' /> Copy Raw Response
-            </Button>
-            <Button basic color='red' onClick={() => setResultModalShown(false)}>
-                <Icon name='remove' /> Close
-            </Button>
-            </ModalActions>
-        </Modal>
+        {renderResultModal()}
     
   
         <Segment style={{
