@@ -142,8 +142,8 @@ const AaiLiveness = () => {
                         <GridColumn textAlign='center' centered>
                           <Header as="h4">Liveness Check Complete</Header>
                           <Header as="h5">{`Result: ${successCode ? successCode : 'Fails'}`}</Header>
-                          { message && <Header as="h6">{message}</Header> }
                           { failCode && <Header as="h6">{failCode}</Header> }
+                          { message && <Header as="h6">{message}</Header> }
                         </GridColumn>
                        : 
                        <>
