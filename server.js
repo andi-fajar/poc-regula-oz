@@ -8,20 +8,15 @@ const PORT = 8080;
 // Enable CORS for all routes
 app.use(cors());
 
-// Parse JSON bodies
 app.use(express.json());
-
 app.use(express.static(path.join(__dirname, 'build')));
 
-// Generic proxy endpoint that forwards all methods (GET, POST, PUT, DELETE, etc.)
 app.post('/proxy/*', async (req, res) => {
     try {
         console.log("Hit post to " + req.url)
-        // Get the target URL from the path (everything after /proxy/)
         const targetUrl = req.url.replace('/proxy/', 'https://api.advance.ai/');
         console.log("Hit redirected post to " + targetUrl)
         
-        // Forward the request to the target URL
         const response = await axios({
             method: req.method,
             url: targetUrl,
@@ -33,7 +28,6 @@ app.post('/proxy/*', async (req, res) => {
             }
         });
 
-        // Send the response back to the client
         res.status(response.status).json(response.data);
     } catch (error) {
         console.error('Proxy error:', error.message);
