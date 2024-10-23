@@ -2,7 +2,8 @@
 // JUST for demo purpose, this should be on BE!!!
 export const demoAaiLivenessSdkK3y = "379f953540f32653"
 export const demoAaiS3cr3t = "5f53397a30d4396e"
-var host = "https://mfcrgla.mfc.staging-traveloka.com";
+const host = "https://mfcrgla.mfc.staging-traveloka.com";
+const beHost = host + "/proxy"
 
 // JUST for demo purpose, this should be on BE
 export const generateEncryptedAaiSignature = async () => {
@@ -27,7 +28,7 @@ export const generateEncryptedAaiSignature = async () => {
 
 // JUST for demo purpose, this should be on BE!!!
 export const generateToken = async () => {
-    const url = 'https://cors-anywhere.herokuapp.com/https://api.advance.ai/openapi/auth/ticket/v1/generate-token';
+    const url = beHost + '/openapi/auth/ticket/v1/generate-token';
     const { signature, timestamp} = await generateEncryptedAaiSignature()
     const payload = {
         accessKey: demoAaiLivenessSdkK3y,
@@ -55,7 +56,7 @@ export const generateToken = async () => {
 
 // JUST for demo purpose, this should be on BE!!!
 export const generateLivenessH5 = async (accessToken) => {
-    const url = 'https://cors-anywhere.herokuapp.com/https://api.advance.ai/openapi/liveness/v2/h5/token';
+    const url = beHost + '/openapi/liveness/v2/h5/token';
     
     const payload = {
         returnUrl: host + "/aai-liveness",
@@ -91,7 +92,7 @@ export const generateLivenessH5 = async (accessToken) => {
 
 // JUST for demo purpose, this should be on BE!!!
 export const getLivenessResult = async (accessToken, signatureId) => {
-    const url = 'https://cors-anywhere.herokuapp.com/https://api.advance.ai/openapi/liveness/v4/h5/get-result';
+    const url = beHost + '/openapi/liveness/v4/h5/get-result';
     
     const payload = {
         signatureId
