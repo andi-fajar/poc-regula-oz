@@ -74,7 +74,7 @@ const Oz = () => {
 
       </TabPane> },
       { menuItem: 'Raw Response', render: () => <TabPane>
-        <JsonViewer data={captureResult}></JsonViewer>
+        <JsonViewer data={{...captureResult, ...livenessResult}}></JsonViewer>
       </TabPane> }
     ]
 
