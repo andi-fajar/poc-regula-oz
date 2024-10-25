@@ -65,7 +65,6 @@ function Home() {
           </Button>
           <Button
             fluid
-            disabled={window.location.hostname !== "localhost"}
             size="large"
             color="green"
             onClick={() => handleAaiOcr()}

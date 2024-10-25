@@ -3,7 +3,8 @@
 export const demoAaiLivenessSdkK3y = "379f953540f32653"
 export const demoAaiS3cr3t = "5f53397a30d4396e"
 const callbackUrl = "https://mfcrgla.mfc.staging-traveloka.com";
-const beHost = "http://localhost:8080"
+const beHost = "https://mfcrgla.mfc.staging-traveloka.com";
+// const beHost = "http://localhost:8080"
 
 // JUST for demo purpose, this should be on BE
 export const generateEncryptedAaiSignature = async () => {

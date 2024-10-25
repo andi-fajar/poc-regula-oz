@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Segment, Header, Button, Grid, GridRow, GridColumn, Modal, Icon, ModalContent, ModalActions, Checkbox, Loader } from 'semantic-ui-react';
+import { Segment, Header, Button, Grid, GridRow, GridColumn, Modal, Icon, ModalContent, ModalActions, Checkbox, Loader, Tab, TabPane} from 'semantic-ui-react';
 import { isEmpty } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -8,7 +8,9 @@ import {
   } from '@regulaforensics/vp-frontend-document-components';
 import {
     detectIdForgery, ocrKtpCheck, generateToken
-} from './AaiApis'
+} from './AaiApis';
+import { JsonViewer } from '@regulaforensics/ui-components';
+
 
 const AaiDocs = () => {
     const navigate = useNavigate();
@@ -16,14 +18,13 @@ const AaiDocs = () => {
     const containerRef = useRef(null);
     const elementRef = useRef(null);
     const [readerResult, setReaderResult] = useState({});
-    const [isLoading, setLoading] = useState(false);
     const [isOcrLoading, setOcrLoading] = useState(false);
     const [isIdForgeryLoading, setIdForgeryLoading] = useState(false);
-    const [documentCheckStarted, setDocumentCheckStarted] = useState(false)
+    const [documentCheckStarted, setDocumentCheckStarted] = useState(false);
 
     const [ocrResponse, setOcrResponse] = useState({});
     const [idForgeryResponse, setIdForgeryResponse] = useState({});
-    const [checkIdCardOnly, setCheckIdCardOnly] = useState(true)
+    const [checkIdForgery, setCheckIdForgery] = useState(true)
 
 
     const containerStyle = {
@@ -47,12 +48,17 @@ const AaiDocs = () => {
     }
 
     const requestIdForgery = async (imageBase64) => {
+        if (!checkIdForgery) {
+            setIdForgeryResponse({})
+            console.log("Skip ID Card forgery checking")
+            return;
+        }
         setIdForgeryLoading(true)
         const tokenRawResponse = await generateToken();
         const imageData = `data:image/jpeg;base64,${imageBase64}`;
         const detectIdForgeryResponse = await detectIdForgery(tokenRawResponse.data.token, imageData, true)
         console.log(detectIdForgeryResponse)
-        setOcrResponse(detectIdForgeryResponse)
+        setIdForgeryResponse(detectIdForgeryResponse)
 
         setIdForgeryLoading(false)
     }
@@ -112,6 +118,67 @@ const AaiDocs = () => {
         console.log(elementRefCurrent);
     }, [documentCheckStarted])
 
+  const renderModal = () => {
+
+    const panes = [
+      { menuItem: 'Result', render: () => <TabPane>
+        <Grid divided='vertically'>
+            <GridRow columns={1}>
+              <GridColumn>
+                
+              </GridColumn>
+            </GridRow>
+            <GridRow columns={1}>
+              <GridColumn>
+                
+              </GridColumn>
+              <GridColumn>
+                
+              </GridColumn>
+            </GridRow>
+            <GridRow columns={1}>
+              <GridColumn>
+                <Header as='h3'>TODO TODO haha</Header>
+              </GridColumn>
+              <GridColumn>
+              
+              </GridColumn>
+            </GridRow>
+          </Grid>  
+
+      </TabPane> },
+      { menuItem: 'Raw Response OCR', render: () => <TabPane>
+        <JsonViewer data={ocrResponse}></JsonViewer>
+      </TabPane> }
+    ]
+
+    if (checkIdForgery) {
+        panes.push(
+            { menuItem: 'Raw Response ID Forgery', render: () => <TabPane>
+                <JsonViewer data={idForgeryResponse}></JsonViewer>
+              </TabPane> }
+        )
+    }
+
+    return <Modal
+        closeIcon
+        onClose={() => setIsResultOpen(false)}
+        onOpen={() => setIsResultOpen(true)}
+        open={isResultOpen}
+        size='small'
+    >
+        <Header icon='archive' content='Result' />
+        <ModalContent>
+          <Tab panes={panes} />
+        </ModalContent>
+        <ModalActions>
+        <Button basic color='red' onClick={() => setIsResultOpen(false)}>
+            <Icon name='remove' /> Close
+        </Button>
+        </ModalActions>
+    </Modal>
+  }
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <div ref={containerRef} style={containerStyle}>
@@ -148,7 +215,7 @@ const AaiDocs = () => {
                     isEmpty(readerResult) ? (
                         <GridRow columns={1} centered>
                             <GridColumn textAlign='center' centered>
-                                <Header as="h4">{`Please prepare your ${checkIdCardOnly ? 'e-KTP' : 'document'}`}</Header>
+                                <Header as="h4">{`Please prepare your ${checkIdForgery ? 'e-KTP' : 'document'}`}</Header>
                             </GridColumn>
                             <GridColumn textAlign='center' centered>
                                 <Button onClick={() => setDocumentCheckStarted(true)}>Click when ready</Button>
@@ -157,11 +224,11 @@ const AaiDocs = () => {
                                 <></>
                             </GridColumn>
                             <GridColumn textAlign='center' centered style={{ maxWidth: '500px' }}>
-                                <Checkbox toggle checked={checkIdCardOnly} onChange={(e, data) => setCheckIdCardOnly(data.checked)} 
-                                        label='Check Indonesian ID Card only (e-KTP)'/>
+                                <Checkbox toggle checked={checkIdForgery} onChange={(e, data) => setCheckIdForgery(data.checked)} 
+                                        label='Check ID Card Forgery'/>
                             </GridColumn>
                             <GridColumn textAlign='center' centered>
-                                {!checkIdCardOnly ? <>Supported documents can be found <a href='https://docs.google.com/spreadsheets/d/1tEjV_S2GQWmt4SVjJfoKcbd85Ixont3dNMCsawo6MjU/edit?gid=888941511#gid=888941511'>here</a></> : ''}
+                                {!checkIdForgery ? <>Supported documents can be found <a href='https://docs.google.com/spreadsheets/d/1tEjV_S2GQWmt4SVjJfoKcbd85Ixont3dNMCsawo6MjU/edit?gid=888941511#gid=888941511'>here</a></> : ''}
                             </GridColumn>
                         </GridRow>
                     ) : (
@@ -196,25 +263,7 @@ const AaiDocs = () => {
                 </GridRow>
             </Grid>
     
-        
-            <Modal
-                closeIcon
-                onClose={() => setIsResultOpen(false)}
-                onOpen={() => setIsResultOpen(true)}
-                open={isResultOpen}
-                size='small'
-            >
-                <Header icon='archive' content='Result' />
-                <ModalContent>
-                    
-                </ModalContent>
-                <ModalActions>
-                <Button basic color='red' onClick={() => setIsResultOpen(false)}>
-                    <Icon name='remove' /> Close
-                </Button>
-                </ModalActions>
-            </Modal>
-        
+            { renderModal() }
     
             <Segment style={{
             position: 'absolute',
