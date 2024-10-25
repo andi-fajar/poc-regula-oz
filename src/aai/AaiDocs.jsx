@@ -254,7 +254,7 @@ const AaiDocs = () => {
             margin: 0,
             borderRadius: 0
             }} textAlign="center" padded="very">
-            <Header as="h1" content="Regula Doc" />
+            <Header as="h1" content="AAI OCR" />
             </Segment>
             <Grid divided='vertically' style={{
                             position: 'absolute',
