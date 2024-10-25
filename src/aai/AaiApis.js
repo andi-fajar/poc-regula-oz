@@ -2,8 +2,8 @@
 // JUST for demo purpose, this should be on BE!!!
 export const demoAaiLivenessSdkK3y = "379f953540f32653"
 export const demoAaiS3cr3t = "5f53397a30d4396e"
-const host = "https://mfcrgla.mfc.staging-traveloka.com";
-const beHost = host + "/proxy"
+const callbackUrl = "https://mfcrgla.mfc.staging-traveloka.com";
+const beHost = "http://localhost:8080"
 
 // JUST for demo purpose, this should be on BE
 export const generateEncryptedAaiSignature = async () => {
@@ -28,7 +28,7 @@ export const generateEncryptedAaiSignature = async () => {
 
 // JUST for demo purpose, this should be on BE!!!
 export const generateToken = async () => {
-    const url = beHost + '/openapi/auth/ticket/v1/generate-token';
+    const url = beHost + '/proxy/openapi/auth/ticket/v1/generate-token';
     const { signature, timestamp} = await generateEncryptedAaiSignature()
     const payload = {
         accessKey: demoAaiLivenessSdkK3y,
@@ -56,11 +56,11 @@ export const generateToken = async () => {
 
 // JUST for demo purpose, this should be on BE!!!
 export const generateLivenessH5 = async (accessToken) => {
-    const url = beHost + '/openapi/liveness/v2/h5/token';
+    const url = beHost + '/proxy/openapi/liveness/v2/h5/token';
     
     const payload = {
-        returnUrl: host + "/aai-liveness",
-        failedReturnUrl: host + "/aai-liveness",
+        returnUrl: callbackUrl + "/aai-liveness",
+        failedReturnUrl: callbackUrl + "/aai-liveness",
         // tryCount: 3,
         region: 'IDN'
     };
@@ -92,7 +92,7 @@ export const generateLivenessH5 = async (accessToken) => {
 
 // JUST for demo purpose, this should be on BE!!!
 export const getLivenessResult = async (accessToken, signatureId) => {
-    const url = beHost + '/openapi/liveness/v4/h5/get-result';
+    const url = beHost + '/proxy/openapi/liveness/v4/h5/get-result';
     
     const payload = {
         signatureId
@@ -121,3 +121,69 @@ export const getLivenessResult = async (accessToken, signatureId) => {
         throw error;
     }
 }
+
+// JUST for demo purpose, this should be on BE!!!
+export const detectIdForgery = async (accessToken, imageData, isBase64 = false) => {
+    const url = beHost + '/proxy/openapi/face-identity/v2/id-forgery-detection'
+    const formData = new FormData();
+
+    if (isBase64) {
+        const base64Response = await fetch(imageData);
+        const blob = await base64Response.blob();
+        formData.append('cardImage', blob, 'image.jpg'); 
+    } else {
+        formData.append('cardImage', imageData);
+    }
+
+    formData.append('cardType', 'ktp');
+
+    try {
+        const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-ACCESS-TOKEN': accessToken,
+        },
+        body: formData
+        });
+
+        const data = await response.json();
+        console.log("get id forrgery raw result : ")
+        console.log(data)
+        return data;
+    } catch (error) {
+        console.error('Error during forgery detection:', error);
+        throw error;
+    }
+}
+
+// JUST for demo purpose, this should be on BE!!!
+export const ocrKtpCheck = async (accessToken, imageData, isBase64 = false) => {
+    const url = beHost + '/proxy/openapi/face-recognition/v3/ocr-ktp-check';
+    const formData = new FormData();
+    
+    if (isBase64) {
+      const base64Response = await fetch(imageData);
+      const blob = await base64Response.blob();
+      formData.append('ocrImage', blob, 'image.jpg'); 
+    } else {
+      formData.append('ocrImage', imageData);
+    }
+  
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'X-ACCESS-TOKEN': accessToken,
+        },
+        body: formData
+      });
+  
+      const data = await response.json();
+      console.log("get id OCR raw result : ")
+      console.log(data)
+      return data;
+    } catch (error) {
+      console.error('Error during OCR KTP check:', error);
+      throw error;
+    }
+  }

@@ -15,11 +15,9 @@ const AaiLiveness = () => {
   const [resultModalShown, setResultModalShown] = useState(false);
   const [loadingResult, setLoadingResult] = useState(false);
   const [signatureId, setSignatureId, deleteSignatureId] = useCookie('aaiSignatureId', null);
-//   const [transactionId, setTransactionId, deleteTransactionId] = useCookie('aaiTransactionId', null);
   const { successCode, failCode, message } = useQuery();
 
   useEffect(() => {
-    // uncomment later
     if (!successCode) {
         console.log("delete previous session")
         deleteSignatureId();
