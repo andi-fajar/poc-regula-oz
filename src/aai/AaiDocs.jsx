@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Segment, Header, Button, Grid, GridRow, GridColumn, Modal, Icon, ModalContent, ModalActions, Checkbox, Loader, Tab, TabPane} from 'semantic-ui-react';
-import { isEmpty } from 'lodash';
+import { Segment, Header, Button, Grid, GridRow, GridColumn, Modal, Icon, ModalContent, ModalActions, Checkbox, Loader, Tab, TabPane, Container, Label, Image } from 'semantic-ui-react';
+import { isEmpty, get } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 import {
     EventActions,
@@ -10,6 +10,17 @@ import {
     detectIdForgery, ocrKtpCheck, generateToken
 } from './AaiApis';
 import { JsonViewer } from '@regulaforensics/ui-components';
+
+const InfoField = ({ label, value }) => (
+    <Container className="mb-4">
+      <Label color="blue" ribbon>
+        {label}
+      </Label>
+      <Container className="mt-2 text-lg">
+        {value || '-'}
+      </Container>
+    </Container>
+  );
 
 
 const AaiDocs = () => {
@@ -125,25 +136,66 @@ const AaiDocs = () => {
         <Grid divided='vertically'>
             <GridRow columns={1}>
               <GridColumn>
-                
+                <Header as='h4'>KTP Image</Header>
+                <Image src={`data:image/jpg;base64,${get(readerResult, '0.raw', '')}`} size='medium' />
               </GridColumn>
             </GridRow>
-            <GridRow columns={1}>
-              <GridColumn>
-                
-              </GridColumn>
-              <GridColumn>
-                
-              </GridColumn>
-            </GridRow>
-            <GridRow columns={1}>
-              <GridColumn>
-                <Header as='h3'>TODO TODO haha</Header>
-              </GridColumn>
-              <GridColumn>
-              
-              </GridColumn>
-            </GridRow>
+            {
+                !isEmpty(idForgeryResponse) && <GridRow columns={2}>
+                <Grid.Column width={16}>
+                    <Header as="h4">ID Forgery Check</Header>
+                </Grid.Column>
+                <GridColumn>
+                    <InfoField label="ID Forgery Check Result" value={get(idForgeryResponse, 'data.result').toUpperCase()} />
+                </GridColumn>
+                <GridColumn>
+                    <InfoField label="Reason" value={get(idForgeryResponse, 'data.detail')} />
+                </GridColumn>
+              </GridRow>
+            }
+        
+        <Grid.Row columns={2}>
+          <Grid.Column width={16}>
+            <Header as="h5">Personal Information</Header>
+          </Grid.Column>
+          <Grid.Column>
+            <InfoField label="ID Number" value={get(ocrResponse, 'data.idNumber')} />
+            <InfoField label="Name" value={get(ocrResponse, 'data.name')} />
+            <InfoField label="Gender" value={get(ocrResponse, 'data.gender')} />
+            <InfoField label="Blood Type" value={get(ocrResponse, 'data.bloodType')} />
+            <InfoField label="Religion" value={get(ocrResponse, 'data.religion')} />
+            <InfoField label="Nationality" value={get(ocrResponse, 'data.nationality')} />
+          </Grid.Column>
+          
+          <Grid.Column>
+            <InfoField label="Place of Birth" value={get(ocrResponse, 'data.placeOfBirth')} />
+            <InfoField label="Birthday" value={get(ocrResponse, 'data.birthday')} />
+            <InfoField label="Marital Status" value={get(ocrResponse, 'data.maritalStatus')} />
+            <InfoField label="Occupation" value={get(ocrResponse, 'data.occupation')} />
+            <InfoField label="Expiry Date" value={get(ocrResponse, 'data.expiryDate')} />
+          </Grid.Column>
+        </Grid.Row>
+
+        {/* Address Section */}
+
+
+        <Grid.Row columns={2}>
+            <Grid.Column width={16}>
+            <Header as="h5">Address Information</Header>
+          </Grid.Column>
+          <Grid.Column>
+            <InfoField label="Address" value={get(ocrResponse, 'data.address')} />
+            <InfoField label="RT/RW" value={get(ocrResponse, 'data.rtrw')} />
+            <InfoField label="Village" value={get(ocrResponse, 'data.village')} />
+          </Grid.Column>
+          
+          <Grid.Column>
+            <InfoField label="District" value={get(ocrResponse, 'data.district')} />
+            <InfoField label="City" value={get(ocrResponse, 'data.city')} />
+            <InfoField label="Province" value={get(ocrResponse, 'data.province')} />
+          </Grid.Column>
+        </Grid.Row>
+
           </Grid>  
 
       </TabPane> },
@@ -215,7 +267,7 @@ const AaiDocs = () => {
                     isEmpty(readerResult) ? (
                         <GridRow columns={1} centered>
                             <GridColumn textAlign='center' centered>
-                                <Header as="h4">{`Please prepare your ${checkIdForgery ? 'e-KTP' : 'document'}`}</Header>
+                                <Header as="h4">{`Please prepare your e-KTP`}</Header>
                             </GridColumn>
                             <GridColumn textAlign='center' centered>
                                 <Button onClick={() => setDocumentCheckStarted(true)}>Click when ready</Button>
@@ -227,29 +279,27 @@ const AaiDocs = () => {
                                 <Checkbox toggle checked={checkIdForgery} onChange={(e, data) => setCheckIdForgery(data.checked)} 
                                         label='Check ID Card Forgery'/>
                             </GridColumn>
-                            <GridColumn textAlign='center' centered>
-                                {!checkIdForgery ? <>Supported documents can be found <a href='https://docs.google.com/spreadsheets/d/1tEjV_S2GQWmt4SVjJfoKcbd85Ixont3dNMCsawo6MjU/edit?gid=888941511#gid=888941511'>here</a></> : ''}
-                            </GridColumn>
                         </GridRow>
                     ) : (
+                        <>
                         <GridRow columns={1} centered>
-
                             <GridColumn textAlign='center' centered>
                                 { 
-                                    isIdForgeryLoading && <>
-                                        <Loader loading={isIdForgeryLoading} indeterminate>Checking ID Forgery</Loader>
-                                        <br></br>
-                                    </>
+                                    (isIdForgeryLoading || isOcrLoading) && 
+                                        <Loader active={(isIdForgeryLoading || isOcrLoading)} loading={(isIdForgeryLoading || isOcrLoading)} indeterminate>
+                                            {
+                                                isIdForgeryLoading && 'Checking ID Forgery. '
+                                            }
+                                            {
+                                                isOcrLoading && 'Checking OCR. '
+                                            }
+                                        </Loader>
                                 }
-                                { 
-                                    isOcrLoading && <>
-                                        <Loader loading={isIdForgeryLoading} indeterminate>Reading OCR</Loader>
-                                        <br></br>
-                                    </>
-                                }
-                                <Header as="h3">ID Card Check Completed!</Header>
+                                {!isIdForgeryLoading && !isOcrLoading && <Header as="h3">ID Card Check Completed!</Header>}
                             </GridColumn>
+                            
                         </GridRow>
+                        </>
                     )
                 }                
                 
