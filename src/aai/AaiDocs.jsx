@@ -142,8 +142,11 @@ const AaiDocs = () => {
             </GridRow>
             {
                 !isEmpty(idForgeryResponse) && <GridRow columns={2}>
-                <Grid.Column width={16}>
+                <Grid.Column>
                     <Header as="h4">ID Forgery Check</Header>
+                </Grid.Column>
+                <Grid.Column>
+                    <Icon name={get(idForgeryResponse, 'data.result') === 'fail' ? 'dont' : 'check circle'} size='large' color={get(idForgeryResponse, 'data.result') === 'fail' ? 'red' : 'green'}>{get(idForgeryResponse, 'data.result').toUpperCase()}</Icon>
                 </Grid.Column>
                 <GridColumn>
                     <InfoField label="ID Forgery Check Result" value={get(idForgeryResponse, 'data.result').toUpperCase()} />
