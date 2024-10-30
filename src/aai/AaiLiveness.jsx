@@ -18,7 +18,7 @@ const AaiLiveness = () => {
   const { successCode, failCode, message } = useQuery();
 
   useEffect(() => {
-    if (!successCode) {
+    if (!(successCode || failCode)) {
         console.log("delete previous session")
         deleteSignatureId();
     }
@@ -55,7 +55,7 @@ const AaiLiveness = () => {
          <Grid divided='vertically'>
             <GridRow columns={1}>
                 <GridColumn>
-                <Header as='h3'>{`Liveness Result: ${successCode}`}</Header>
+                <Header as='h3'>{`Liveness Result: ${successCode ? successCode : 'Fails'}`}</Header>
                 <Header as='h2'>{`Score : ${get(livenessResult, 'data.score')}`}</Header>
                 </GridColumn>
             </GridRow>
@@ -140,8 +140,8 @@ const AaiLiveness = () => {
                         <GridColumn textAlign='center' centered>
                           <Header as="h4">Liveness Check Complete</Header>
                           <Header as="h5">{`Result: ${successCode ? successCode : 'Fails'}`}</Header>
-                          { failCode && <Header as="h6">{failCode}</Header> }
-                          { message && <Header as="h6">{message}</Header> }
+                          { failCode && <Header as="h6">{`check status: ${failCode}`}</Header> }
+                          { message && <Header as="h6">{`message: ${message}`}</Header> }
                         </GridColumn>
                        : 
                        <>
