@@ -202,14 +202,14 @@ const AaiDocs = () => {
           </Grid>  
 
       </TabPane> },
-      { menuItem: 'Raw Response OCR', render: () => <TabPane>
+      { menuItem: 'OCR - Raw Response', render: () => <TabPane>
         <JsonViewer data={ocrResponse}></JsonViewer>
       </TabPane> }
     ]
 
     if (checkIdForgery) {
         panes.push(
-            { menuItem: 'Raw Response ID Forgery', render: () => <TabPane>
+            { menuItem: 'ID Forgery - Raw Response', render: () => <TabPane>
                 <JsonViewer data={idForgeryResponse}></JsonViewer>
               </TabPane> }
         )
