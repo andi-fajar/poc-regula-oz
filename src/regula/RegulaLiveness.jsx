@@ -35,7 +35,7 @@ const RegulaWithLiveness = () => {
 
     useEffect(() => {
         console.log("INIT FIRST TIME")
-        void defineComponents().then(() => window.RegulaDocumentSDK.initialize({ license: 'AAEAAKuvmF430Aay0Ef9dG0Wmq73sE5BjW9l+N1vXOPPI5ZoQnFPMGE8Co3KojvtQib0M0PR5O+6l43x1wTBDifFY3yIKYUjRoomOdz4V2t4SEVehsia1xW0u8ZKc0N9IpSxPrREjCETQT9wnLrkZHwyZAIfLNRF+H+xUI0tkMImXwa6pvM/lzcvh+cfwGU/Tmg5cDakkqnHALlxYg1TfsmQkTOAZPI9hl7tEbxla2W8FucmwXEhKaPLRvcKrI/5Em8ZK+0iZ+bu1RRqAkUQfLhLym0si9HaLGRNAGsR6WD7ZfJkf5kL6polf/JaLaWESRY4QxvhHQUzHgq/+t5q9SDVuUnkAAAAAAAAEPJ86bDHkhTQkmx6xYF73dn+tfyT1maGHGl0dDMuBTI1ovI0dXCqoPAhR6BduAF7Ka2fM3YeqR2rE/8W2H5olwQ58t0ico9bYB6Td0oo+IDiG+l/Alacb1ppP4CbaQB1DeZAOphdTro63PjwdGYWXFEelAtZScNd+IOovGipufG36X+wIvnpx4MTvoBQySsmvU8kMHFeB+VP2a/1uKLVAYr5XC9OTTH2PZ4mevXBMr0kWoYtHae9tQOdchNuTEG5SmLQt2vNcCOt7uGzheIA6qHdGMCoT+pstf4FZGzfobMr' }));
+        void defineComponents().then(() => window.RegulaDocumentSDK.initialize({ license: 'AAEAAAs3hNcmFSdNSRH2RD7F6gWGLFuFXAcQmPTU3gqrJyouMIdR/jCvlxJoIjbzW1QFmVBiHV1FDoXGX/Oet6ki+OLkjsMMQoYqUsXUU1phEZtGPEYAd3sLAwd6vMU8fX8fBD/GRDHn006SS+JP79bHN7/EmHveEfX8hUVMtVv8sZroZeadke/L53XpRQtBRNWGMiRcpvoxMUK3QtFOysePSZtZUsBL9385dVu7KZHFpcYkqDza88BkZYXq1FjIaPWNVVMw0++DU24G0gR1FtYd11ggUND5uMmZ6c+xN2dpROoPqRNQEsTiG+hp87wLXikz3iJPdkaqT9CLmitbufQGSbDkAAAAAAAAEFhGRH6zzGtBsvTAfQdGpepR1NxoQcsNhhxUJ4L04BUD50J9TCxjczKpnHi5HdIqyiEUkxbeWeQ7aLeC8HES5Z2KKBYfe1OLKvPADO4zyvmsF1J2bcN2CNlj+KCVvhFiB0zVexTLOxWjfWg3NhzWug5wuMzY5g7umLrjmSPnguijeGer2zLScf+iXWnFy+Hygl7PPZ6SKQWhk//FbgulNgNH/d50BgfQE/hoz7y7EFT5xBCZgQrDQ0XnxH5eUxMfx4Uy6/r77gjjPC9RX52OFnl29Cps1Z2TYmyjBel5sH94' }));
 
         const containerCurrent = containerRef.current;
         if (!containerCurrent) return;
