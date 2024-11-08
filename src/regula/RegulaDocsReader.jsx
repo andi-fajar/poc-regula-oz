@@ -52,7 +52,7 @@ const RegulaDocsReader = () => {
         const processParam = {
             images: [ documentFront ],
             processParam: {
-                scenario: Scenario.OCR,
+                scenario: Scenario.FULL_PROCESS,
                 documentIdList: checkIdCardOnly ? [
                     509424248,
                     1218661532,
@@ -68,8 +68,7 @@ const RegulaDocsReader = () => {
                     1218661451
                 ] : [],
                 lcidFilter: LCID.INDONESIAN,
-                documentGroupFilter: checkIdCardOnly ? [DocumentType.IDENTITY_CARD] : [],
-                checkAuth: true
+                documentGroupFilter: checkIdCardOnly ? [DocumentType.IDENTITY_CARD] : []
             }
         }
         setLoading(true);
