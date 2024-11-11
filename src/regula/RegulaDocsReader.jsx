@@ -17,6 +17,48 @@ import {
     DocumentType
 } from '@regulaforensics/document-reader-webclient';
 
+import { ReactComponent as FrameSVG } from './ktp_frame.svg';
+
+const documentReaderStyle = {
+    'position': 'absolute',
+    'top': '0',
+    'left': '0',
+    '--main-color': 'blue',
+    backgroundColor: 'black'
+}
+
+const disclaimerText = {
+    display: 'block',
+    position: 'absolute',
+    zIndex: 1,
+    textAlign: 'center',
+    fontFamily: 'Noto Sans, sans-serif',
+    lineHeight: '150%',
+    padding: '0.75em 1.5em',
+    marginTop: '20px',
+    color: 'white',
+    right: '50%',
+    top: '80%',
+    transform: 'translate(62%, 0)',
+    backgroundColor: 'rgba(27, 16, 31, 0.5)',
+    borderRadius: '6px',
+};
+
+const frameKtpStyle = {
+    display: 'block',
+    position: 'absolute',
+    zIndex: 1,
+    textAlign: 'center'
+}
+
+const containerStyle = {
+    justifyContent: 'center',
+    alignItems: 'center',
+    display: 'flex',
+    position: 'relative',
+    width: '100%',
+    height: '100vh',
+  };
 
 const RegulaDocsReader = () => {
     const navigate = useNavigate();
@@ -33,12 +75,6 @@ const RegulaDocsReader = () => {
     const [checkRequest, setCheckRequest] = useState({});
     const [checkResponse, setCheckResponse] = useState({});
     const [checkIdCardOnly, setCheckIdCardOnly] = useState(true)
-
-
-    const containerStyle = {
-        justifyContent: 'center',
-        alignItems: 'center'
-      };
 
     const showResult = async () => {
         await requestOcr();
@@ -142,11 +178,16 @@ const RegulaDocsReader = () => {
             serviceUrl: basePath,
             regulaLogo: false,
             internalScenario: InternalScenarios.Locate,
-            captureButton: true,
+            captureButton: false,
             changeCameraButton: true,
             closeButton: false,
             captureMode: 'auto',
-            cameraMode: 'environment'
+            cameraMode: 'environment',
+            backgroundMaskAlpha: 1,
+            cameraFrameOffsetWidth: 5,
+            changeCameraButton: false,
+            cameraFrameBorderWidth: '1'
+
         };
         console.log(elementRefCurrent.settings);
         console.log(elementRefCurrent);
@@ -157,7 +198,12 @@ const RegulaDocsReader = () => {
             <div ref={containerRef} style={containerStyle}>
             {
                 documentCheckStarted ? (
-                        <document-reader ref={elementRef}></document-reader>
+                        <>
+                            <FrameSVG style={frameKtpStyle}></FrameSVG>
+                            <div style={disclaimerText}>Akan dipake traveloka</div>
+                            <document-reader ref={elementRef} style={documentReaderStyle}></document-reader>
+                        </>
+                        
                 ) : (
         <>
             <Segment inverted color="blue" style={{
@@ -187,6 +233,8 @@ const RegulaDocsReader = () => {
                 {
                     isEmpty(readerResult) ? (
                         <GridRow columns={1} centered>
+                            <GridColumn>
+                            </GridColumn>
                             <GridColumn textAlign='center' centered>
                                 <Header as="h4">{`Please prepare your ${checkIdCardOnly ? 'e-KTP' : 'document'}`}</Header>
                             </GridColumn>
