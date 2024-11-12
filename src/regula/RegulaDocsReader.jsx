@@ -184,10 +184,14 @@ const RegulaDocsReader = () => {
             captureMode: 'auto',
             cameraMode: 'environment',
             backgroundMaskAlpha: 1,
-            cameraFrameOffsetWidth: 5,
+            cameraFrameOffsetWidth: 0,
             changeCameraButton: false,
-            cameraFrameBorderWidth: '1',
-            statusPositionMultiplier: 2
+            cameraFrameBorderWidth: 0,
+            statusPositionMultiplier: 2,
+            cameraFrameShapeType: 'corners',
+            cameraFrameOffsetWidth: 0,
+            cameraFrameLineLength: 0
+            
         };
         console.log(elementRefCurrent.settings);
         console.log(elementRefCurrent);
