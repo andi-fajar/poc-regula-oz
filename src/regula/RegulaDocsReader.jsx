@@ -36,11 +36,11 @@ const disclaimerText = {
     lineHeight: '150%',
     padding: '0.75em 1.5em',
     marginTop: '20px',
-    color: 'white',
+    color: 'black',
     right: '50%',
-    top: '80%',
+    top: '70%',
     transform: 'translate(62%, 0)',
-    backgroundColor: 'rgba(27, 16, 31, 0.5)',
+    backgroundColor: 'white',
     borderRadius: '6px',
 };
 
@@ -186,8 +186,8 @@ const RegulaDocsReader = () => {
             backgroundMaskAlpha: 1,
             cameraFrameOffsetWidth: 5,
             changeCameraButton: false,
-            cameraFrameBorderWidth: '1'
-
+            cameraFrameBorderWidth: '1',
+            statusPositionMultiplier: 2
         };
         console.log(elementRefCurrent.settings);
         console.log(elementRefCurrent);
