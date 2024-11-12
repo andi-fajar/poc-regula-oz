@@ -10,7 +10,6 @@ const containerStyle = {
   alignItems: 'center'
 };
 
-
 const Oz = () => {
   const navigate = useNavigate();
   const [captureResult, setCaptureResult] = useState({});
@@ -69,12 +68,18 @@ const Oz = () => {
                 <Header as='h2'>{get(livenessResult, 'folder_state')}</Header>
               </GridColumn>
             </GridRow>
-            <GridRow columns={1}>
+            <GridRow columns={2}>
               <GridColumn>
-                <Header as='h3'>Best Frame</Header>
+                <Header as='h3'>Best Frame (FE)</Header>
+              </GridColumn>
+              <GridColumn>
+                <Header as='h3'>Best Frame from BE</Header>
               </GridColumn>
               <GridColumn>
                 <Image src={get(captureResult, 'best_frame', '')} size='large' />
+              </GridColumn>
+              <GridColumn>
+                <Image src={get(resultBe, 'items.0.analyses.0.results_media.0.output_images.0.original_url', '')} size='large' />
               </GridColumn>
             </GridRow>
             <GridRow columns={1}>
@@ -154,7 +159,6 @@ const Oz = () => {
                         justifyContent: 'center'
                         }}>
             <GridRow columns={1} centered>
-                    
                       {livenessStarted ? 
                         <GridColumn textAlign='center' centered>
                           <Header as="h4">Liveness Check Complete</Header>
@@ -174,7 +178,6 @@ const Oz = () => {
                         </GridColumn>
                        </>
 }  
-                    
             </GridRow>
             <GridRow columns={2}>
                 
