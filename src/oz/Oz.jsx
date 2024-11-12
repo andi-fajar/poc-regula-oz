@@ -3,7 +3,7 @@ import { Segment, Header, Grid, GridRow, GridColumn, Modal, Button, Icon, ModalC
 import { isEmpty, get } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 import { JsonViewer } from '@regulaforensics/ui-components'
-
+import { getLivenessResult } from './OzApi'
 
 const containerStyle = {
   justifyContent: 'center',
@@ -17,12 +17,23 @@ const Oz = () => {
   const [livenessResult, setLivenessResult] = useState({});
   const [livenessStarted, setLivenessStarted] = useState(false);
   const [resultModalShown, setResultModalShown] = useState(false);
+  const [resultBe, setResultBe] = useState({});
+  const [transactionId, setTransactionId] = useState(null);
+  const [loadingResult, setLoadingResult] = useState(false);
   const availableActions = ['video_selfie_left', 'video_selfie_right', 'video_selfie_down', 'video_selfie_high', 'video_selfie_smile', 'video_selfie_eyes', 'video_selfie_scan', 'video_selfie_best', 'video_selfie_blank']
   const [actions, setActions] = useState([])
 
   const handleOpenDemo = () => {
+    const random = Math.floor(Math.random() * 100)
+    const now = Date.now();
+    const randomId = `${now}_${random}`;
+    setTransactionId(randomId);
     setLivenessStarted(true)
+   
     window.OzLiveness.open({
+        meta: { 
+          'transaction_id': randomId
+        },
         action: (isEmpty(actions) ? null : actions),
         on_error: result => console.error('on_error', result),
         on_submit: result => console.log('on_submit', result),
@@ -37,6 +48,14 @@ const Oz = () => {
           setCaptureResult(result)
         },
     });
+  }
+
+  const getResultFromBe = async () => {
+    setLoadingResult(true);
+    const response = await getLivenessResult(transactionId);
+    setResultBe(response)
+    setLoadingResult(false);
+    setResultModalShown(true);
   }
 
   const renderResultModal = () => {
@@ -73,8 +92,11 @@ const Oz = () => {
           </Grid>  
 
       </TabPane> },
-      { menuItem: 'Raw Response', render: () => <TabPane>
+      { menuItem: 'Raw Response (FE)', render: () => <TabPane>
         <JsonViewer data={{...captureResult, ...livenessResult}}></JsonViewer>
+      </TabPane> },
+       { menuItem: 'Raw Response (BE)', render: () => <TabPane>
+        <JsonViewer data={resultBe}></JsonViewer>
       </TabPane> }
     ]
 
@@ -162,7 +184,7 @@ const Oz = () => {
                           <Button onClick={() => navigate("/")}>Back</Button>
                       </GridColumn>
                       <GridColumn textAlign='center'>
-                          <Button loading={isEmpty(livenessResult) || isEmpty(captureResult)} disabled={isEmpty(livenessResult)} onClick={() => setResultModalShown(true)}>Show result</Button>
+                          <Button loading={isEmpty(livenessResult) || isEmpty(captureResult) || loadingResult} disabled={isEmpty(livenessResult) || loadingResult} onClick={() => getResultFromBe()}>Show result</Button>
                       </GridColumn>
                     </>
                    : 
