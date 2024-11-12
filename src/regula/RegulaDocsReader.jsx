@@ -48,6 +48,7 @@ const frameKtpStyle = {
     display: 'block',
     position: 'absolute',
     zIndex: 1,
+    padding: '0px 20px 0px 20px',
     textAlign: 'center'
 }
 
