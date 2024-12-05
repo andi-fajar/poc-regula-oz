@@ -35,7 +35,7 @@ const RegulaWithLiveness = () => {
 
     useEffect(() => {
         console.log("INIT FIRST TIME")
-        void defineComponents().then(() => window.RegulaDocumentSDK.initialize({ license: 'AAEAAAs3hNcmFSdNSRH2RD7F6gWGLFuFXAcQmPTU3gqrJyouMIdR/jCvlxJoIjbzW1QFmVBiHV1FDoXGX/Oet6ki+OLkjsMMQoYqUsXUU1phEZtGPEYAd3sLAwd6vMU8fX8fBD/GRDHn006SS+JP79bHN7/EmHveEfX8hUVMtVv8sZroZeadke/L53XpRQtBRNWGMiRcpvoxMUK3QtFOysePSZtZUsBL9385dVu7KZHFpcYkqDza88BkZYXq1FjIaPWNVVMw0++DU24G0gR1FtYd11ggUND5uMmZ6c+xN2dpROoPqRNQEsTiG+hp87wLXikz3iJPdkaqT9CLmitbufQGSbDkAAAAAAAAEFhGRH6zzGtBsvTAfQdGpepR1NxoQcsNhhxUJ4L04BUD50J9TCxjczKpnHi5HdIqyiEUkxbeWeQ7aLeC8HES5Z2KKBYfe1OLKvPADO4zyvmsF1J2bcN2CNlj+KCVvhFiB0zVexTLOxWjfWg3NhzWug5wuMzY5g7umLrjmSPnguijeGer2zLScf+iXWnFy+Hygl7PPZ6SKQWhk//FbgulNgNH/d50BgfQE/hoz7y7EFT5xBCZgQrDQ0XnxH5eUxMfx4Uy6/r77gjjPC9RX52OFnl29Cps1Z2TYmyjBel5sH94' }));
+        void defineComponents().then(() => window.RegulaDocumentSDK.initialize({ license: 'AAEAAAg5h8/a+ubAClN1SNuPWP8T7PMbbPMchPQuxl81B/ftu7DrDfJman93l0Wa5XDBSVH3f3+vTleUEFKc/0jOWb12s+G3jKBzYLDqP0oJk89k/x1buW+W7SEPsM+mYhX9yz9+TszXOD1yTCsXBbGHxhJ1yuZsPscHwxLaiJgDKNMxmTpyZsJr+a2mPmrqJUEYmPo9vHdjAnk5zu3WtlvKspBsB8ljEdtSMKdKSak5H1jutMNmfB3YbOyBUNk96YiTg+d5PE9hM2fzMZ8sO5AHjq23z3NcNL8OBCZkon7f0tS4a37Ph/9YvrpDDAcNQsnDcCbS5TWc7sHINbM4X42evj7kAAAAAAAAEF8YQL0ogrGiCjTmF1CnGW4smBoVtB0kzfmBQWdOAnkBJDjnkmNEBV303ilC65urVdf7MgX8zUo58IL+OIPih8PFWGV9h8OCtGsiJjLIsQbPLeZ0c718BDQQ/PI/Ep+TllgJSjWTCUEmp2pSM0mLH4tVA1hT7JXD4J613RmphzO/1Ds6XLe1XQ5saFKyrbHN1sQXc5iQaGPkryNlkMeF3fQKr3cIu9JkH/tdmTHXav8KI8W+ROkz6w1aRxzR9xoC8EDfiHd75t07KZ9fwKd8iyoq+eYvnFAhcOG9SoDkTH9d' }));
 
         const containerCurrent = containerRef.current;
         if (!containerCurrent) return;
